@@ -7,7 +7,7 @@ module Miam
     end
 
     def find(account_id, *names)
-      if names.length > 1
+      if names.is_a?(Array)
         result = dynamo_service.batch_get_item(
           request_items: {
             Miam::Policy.table_name => {
@@ -17,7 +17,7 @@ module Miam
             }
           }
         )
-        result.items.map do |item|
+        result.responses[Miam::Policy.table_name].map do |item|
           Miam::Policy.from_dynamo_record(item)
         end
       else

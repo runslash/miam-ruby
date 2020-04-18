@@ -17,7 +17,7 @@ module Miam
             }
           }
         )
-        result.items.map do |item|
+        result.responses[Miam::Group.table_name].map do |item|
           Miam::Group.from_dynamo_record(item)
         end
       else

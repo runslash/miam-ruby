@@ -14,12 +14,20 @@ module Miam
       checkout { |cl| cl.update_item(params) }
     end
 
+    def batch_get_item(params)
+      checkout { |cl| cl.batch_get_item(params) }
+    end
+
     def delete_item(params)
       checkout { |cl| cl.delete_item(params) }
     end
 
     def transact_write_items(params)
       checkout { |cl| cl.transact_write_items(params) }
+    end
+
+    def query(params)
+      checkout { |cl| cl.query(params) }
     end
 
     def checkout(&body)
