@@ -7,6 +7,7 @@ module Miam
     attribute :account_id, :string
     attribute :name, :string
     attribute :hashed_password, :string
+    attribute :policy_names
     attribute :created_at, :datetime, default: -> { Time.now.utc }
     attribute :updated_at, :datetime, default: -> { Time.now.utc }
 
@@ -14,7 +15,10 @@ module Miam
       new(
         account_id: item['account_id'],
         name: item['name'],
-        hashed_password: item['hashed_password']
+        hashed_password: item['hashed_password'],
+        policy_names: item['policy_names'],
+        created_at: Time.at(item['created_at'].to_i),
+        updated_at: Time.at(item['updated_at'].to_i)
       )
     end
 

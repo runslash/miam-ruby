@@ -14,7 +14,10 @@ module Miam
       'DeleteAccessKey' => :DeleteAccessKeyOperation,
       # POLICIES
       'CreatePolicy' => :CreatePolicyOperation,
-      'UpdatePolicy' => :UpdatePolicyOperation
+      'DescribePolicy' => :DescribePolicyOperation,
+      'UpdatePolicy' => :UpdatePolicyOperation,
+      'AttachUserPolicy' => :AttachUserPolicyOperation,
+      'DetachUserPolicy' => :DetachUserPolicyOperation
     }.freeze
 
     def self.configure(&block)

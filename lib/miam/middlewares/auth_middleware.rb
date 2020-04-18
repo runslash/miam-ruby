@@ -4,7 +4,11 @@ module Miam
   module Middlewares
     class AuthMiddleware
       OPERATION_WHITELIST = %w[Authorize].freeze
-      AUTH_ERROR_RESPONSE = [{ 'error' => 'Authentication error' }.to_json].freeze
+      AUTH_ERROR_RESPONSE = [
+        401,
+        { 'content-type' => 'application/json'},
+        [{ 'error' => 'Authentication error' }]
+      ].freeze
 
       def initialize(app)
         @app = app
@@ -17,6 +21,7 @@ module Miam
             'operation_name' => env['miam.operation_name'],
             'authentication_string' => request.get_header('HTTP_AUTHORIZATION').to_s
           )
+          return [AUTH_RESPONSE_ERROR] if result.nil?
 
           env['miam.account_id'] = result.account_id
           env['miam.user'] = result.user
@@ -25,12 +30,6 @@ module Miam
         end
 
         @app.call(env)
-      rescue Miam::Operation::OperationError
-        [
-          401,
-          { 'content-type' => 'application/json'},
-          AUTH_ERROR_RESPONSE
-        ]
       end
     end
   end

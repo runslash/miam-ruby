@@ -58,11 +58,15 @@ module Miam
             }
           }
         ]
-        Miam::DynamoService.instance.transact_write_items(
+        result = Miam::DynamoService.instance.transact_write_items(
           transact_items: transact_items
         )
 
-        Output.new(policy: policy)
+        Output.new(
+          policy: Miam::PolicyService.instance.find(
+            policy.account_id, policy.name
+          )
+        )
       rescue Aws::DynamoDB::Errors::TransactionCanceledException
         raise OperationError, 'Policy already exists'
       end

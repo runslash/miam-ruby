@@ -10,6 +10,7 @@ require 'miam/application'
 require 'miam/operation'
 require 'miam/dynamo_service'
 require 'miam/user_service'
+require 'miam/policy_service'
 require 'miam/configuration'
 require 'miam/model'
 require 'miam/user'
@@ -32,7 +33,10 @@ require 'miam/operations/change_user_password_operation'
 require 'miam/operations/create_access_key_operation'
 require 'miam/operations/delete_access_key_operation'
 require 'miam/operations/create_policy_operation'
+require 'miam/operations/describe_policy_operation'
 require 'miam/operations/update_policy_operation'
+require 'miam/operations/attach_user_policy_operation'
+require 'miam/operations/detach_user_policy_operation'
 
 module Miam
   class Error < StandardError; end
