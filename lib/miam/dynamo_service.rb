@@ -6,6 +6,10 @@ module Miam
       checkout { |cl| cl.get_item(params) }
     end
 
+    def put_item(params)
+      checkout { |cl| cl.put_item(params) }
+    end
+
     def update_item(params)
       checkout { |cl| cl.update_item(params) }
     end

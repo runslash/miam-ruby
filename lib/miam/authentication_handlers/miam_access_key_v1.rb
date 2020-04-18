@@ -6,7 +6,6 @@ module Miam
       end
 
       def allow!(operation_name, **kwargs)
-        p operation_name
         true
       end
     end

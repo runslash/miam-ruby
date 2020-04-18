@@ -9,6 +9,12 @@ module Miam
       'CreateUser' => :CreateUserOperation,
       'DeleteUser' => :DeleteUserOperation,
       'ChangeUserPassword' => :ChangeUserPasswordOperation,
+      # GROUPS
+      'CreateGroup' => :CreateGroupOperation,
+      'DeleteGroup' => :DeleteGroupOperation,
+      'DescribeGroup' => :DescribeGroupOperation,
+      'AttachUserGroup' => :AttachUserGroupOperation,
+      'DetachUserGroup' => :DetachUserGroupOperation,
       # ACCESS KEYS
       'CreateAccessKey' => :CreateAccessKeyOperation,
       'DeleteAccessKey' => :DeleteAccessKeyOperation,
@@ -16,7 +22,9 @@ module Miam
       'CreatePolicy' => :CreatePolicyOperation,
       'DescribePolicy' => :DescribePolicyOperation,
       'UpdatePolicy' => :UpdatePolicyOperation,
+      'AttachGroupPolicy' => :AttachGroupPolicyOperation,
       'AttachUserPolicy' => :AttachUserPolicyOperation,
+      'DetachGroupPolicy' => :DetachGroupPolicyOperation,
       'DetachUserPolicy' => :DetachUserPolicyOperation
     }.freeze
 

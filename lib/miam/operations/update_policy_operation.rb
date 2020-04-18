@@ -58,7 +58,7 @@ module Miam
             }
           }
         ]
-        result = Miam::DynamoService.instance.transact_write_items(
+        Miam::DynamoService.instance.transact_write_items(
           transact_items: transact_items
         )
 
