@@ -1,0 +1,85 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Default": "development",
+      "AllowedValues": ["development", "staging", "production"],
+      "Description": "Environment to use"
+    }
+  },
+  "Resources": {
+    "MIAMUsersTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Join": ["-", ["miam", { "Ref": "Environment" }, "users"]] },
+        "AttributeDefinitions": [
+          { "AttributeName": "account_id", "AttributeType": "S" },
+          { "AttributeName": "name", "AttributeType": "S" }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          { "AttributeName": "account_id", "KeyType": "HASH" },
+          { "AttributeName": "name", "KeyType": "RANGE" }
+        ]
+      }
+    },
+    "MIAMPoliciesTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Join": ["-", ["miam", { "Ref": "Environment" }, "policies"]] },
+        "AttributeDefinitions": [
+          { "AttributeName": "account_id", "AttributeType": "S" },
+          { "AttributeName": "name", "AttributeType": "S" }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          { "AttributeName": "account_id", "KeyType": "HASH" },
+          { "AttributeName": "name", "KeyType": "RANGE" }
+        ]
+      }
+    },
+    "MIAMPolicyVersionsTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Join": ["-", ["miam", { "Ref": "Environment" }, "policy-versions"]] },
+        "AttributeDefinitions": [
+          { "AttributeName": "account_id", "AttributeType": "S" },
+          { "AttributeName": "name_version", "AttributeType": "S" }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          { "AttributeName": "account_id", "KeyType": "HASH" },
+          { "AttributeName": "name_version", "KeyType": "RANGE" }
+        ]
+      }
+    },
+    "MIAMAccessKeysTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Join": ["-", ["miam", { "Ref": "Environment" }, "access-keys"]] },
+        "AttributeDefinitions": [
+          { "AttributeName": "id", "AttributeType": "S" },
+          { "AttributeName": "account_id", "AttributeType": "S" },
+          { "AttributeName": "user_name", "AttributeType": "S" }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          { "AttributeName": "id", "KeyType": "HASH" }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "account_id_user_name-index",
+            "KeySchema": [
+              { "AttributeName": "account_id", "KeyType": "HASH" },
+              { "AttributeName": "user_name", "KeyType": "RANGE" }
+            ],
+            "Projection": {
+              "ProjectionType": "KEYS_ONLY"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

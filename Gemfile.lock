@@ -1,0 +1,79 @@
+PATH
+  remote: .
+  specs:
+    miam (0.1.0)
+      activemodel (~> 6.0)
+      aws-sdk-dynamodb (~> 1.45)
+      bcrypt (~> 3.1)
+      pry
+      puma (~> 4.3)
+      rack (~> 2.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (6.0.2.2)
+      activesupport (= 6.0.2.2)
+    activesupport (6.0.2.2)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+      zeitwerk (~> 2.2)
+    aws-eventstream (1.1.0)
+    aws-partitions (1.297.0)
+    aws-sdk-core (3.94.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.239.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1.0)
+    aws-sdk-dynamodb (1.45.0)
+      aws-sdk-core (~> 3, >= 3.71.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.1.1)
+      aws-eventstream (~> 1.0, >= 1.0.2)
+    bcrypt (3.1.13)
+    coderay (1.1.2)
+    concurrent-ruby (1.1.6)
+    diff-lcs (1.3)
+    i18n (1.8.2)
+      concurrent-ruby (~> 1.0)
+    jmespath (1.4.0)
+    method_source (1.0.0)
+    minitest (5.14.0)
+    nio4r (2.5.2)
+    pry (0.13.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    puma (4.3.3)
+      nio4r (~> 2.0)
+    rack (2.2.2)
+    rake (12.3.3)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-core (3.9.1)
+      rspec-support (~> 3.9.1)
+    rspec-expectations (3.9.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-mocks (3.9.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.2)
+    thread_safe (0.3.6)
+    tzinfo (1.2.7)
+      thread_safe (~> 0.1)
+    zeitwerk (2.3.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  miam!
+  rake (~> 12.0)
+  rspec (~> 3.0)
+
+BUNDLED WITH
+   2.1.4

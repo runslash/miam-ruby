@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require 'ostruct'
+require 'optparse'
+
+options = OpenStruct.new(
+  background: false
+)
+OptionParser.new do |opts|
+  opts.on('-d', '--background', 'Background mode (daemon)') do
+    options.background = true
+  end
+end.parse!
+
+Dir.chdir(File.realpath(File.dirname(__FILE__) + '/../'))
+
+command_name = ARGV.shift
+
+case command_name
+when 'start'
+  if options.background == true
+    pid = fork do
+      $stdout.reopen('/dev/null')
+      $stderr.reopen('/dev/null')
+      exec 'bundle exec puma'
+    end
+    Process.detach(pid) unless pid.nil?
+  else
+    exec 'bundle exec puma'
+  end
+when 'reload'
+  Process.kill(
+    'USR1', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
+  )
+when 'restart'
+  Process.kill(
+    'USR2', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
+  )
+when 'stop'
+  Process.kill(
+    'TERM', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
+  )
+when 'deploy'
+  Aws::CloudFormation::
+else
+  abort "Unknown command: #{command_name}"
+end
