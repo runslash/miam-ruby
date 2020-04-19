@@ -30,7 +30,7 @@ module Miam
       checkout { |cl| cl.query(params) }
     end
 
-    def checkout(&body)
+    def checkout(&_block)
       conn = nil
       conn = @connection_pool.pop
       yield(conn)

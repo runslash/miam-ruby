@@ -1,6 +1,6 @@
 module Miam
   module Operations
-    class ListUserPoliciesOperation < Operation
+    class ListUserAccessKeysOperation < Operation
       EXPRESSION_ATTRIBUTE_NAMES = {
         '#account_id' => 'account_id'
       }.freeze
@@ -11,17 +11,12 @@ module Miam
         )
         raise OperationError, 'User not found' if user.nil?
 
-        policies = \
-          if !user.policy_names.nil? && user.policy_names.length > 0
-            Miam::PolicyService.instance.mfind(
-              context.fetch(:account_id), user.policy_names
-            )
+        access_keys = \
+          if !user.access_key_ids.nil? && user.access_key_ids.length > 0
+            Miam::AccessKeyService.instance.find(*user.access_key_ids.to_a)
           end
 
-        Output.new(
-          policies: policies,
-          inline_policies: user.inline_policies.values
-        )
+        Output.new(access_keys: access_keys || [])
       end
 
       private

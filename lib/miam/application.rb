@@ -10,6 +10,9 @@ module Miam
       'DeleteUser' => :DeleteUserOperation,
       'ChangeUserPassword' => :ChangeUserPasswordOperation,
       'ListUserPolicies' => :ListUserPoliciesOperation,
+      'ListUserAccessKeys' => :ListUserAccessKeysOperation,
+      'AttachUserInlinePolicy' => :AttachUserInlinePolicyOperation,
+      'DetachUserInlinePolicy' => :DetachUserInlinePolicyOperation,
       # GROUPS
       'CreateGroup' => :CreateGroupOperation,
       'DeleteGroup' => :DeleteGroupOperation,
@@ -57,12 +60,12 @@ module Miam
         request.params.fetch(self.class.configuration.operation_parameter_name)
       )
       operation_handler = Miam::Operations.const_get(operation_klass_name).new(
-        account_id: env.fetch('miam.account_id'),
-        user: env.fetch('miam.user')
+        account_id: env.fetch('miam.account_id', nil),
+        user: env.fetch('miam.user', nil)
       )
 
       output = operation_handler.call(env['miam.request.data'])
-      [200, { 'content-type' => 'application/json' }, [output.to_json]]
+      [200, { 'content-type' => 'application/json' }, [JSON.dump(output)]]
     rescue Miam::Operation::OperationError => e
       [
         400,

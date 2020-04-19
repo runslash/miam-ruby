@@ -14,9 +14,5 @@ module Miam
     def self.table_name
       @table_name
     end
-
-    def as_output
-      as_json
-    end
   end
 end

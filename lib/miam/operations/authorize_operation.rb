@@ -8,14 +8,15 @@ module Miam
       def call(args)
         operation_name = args.fetch('operation_name')
         auth_handler = parse_authorization_string(
-          args.fetch('authentication_string')
+          args.fetch('auth_token')
         )
         policy, policy_statement = auth_handler.allow!(
-          operation_name,
+          operation_name, args.fetch('auth_body_signature'),
+          headers: args.fetch('auth_headers'),
           conditions: args.fetch('auth_conditions', nil)
         )
         if policy.nil? || policy_statement.nil?
-          # raise OperationError, 'Authentication error'
+          raise OperationError, 'Authentication error'
         end
 
         Output.new(

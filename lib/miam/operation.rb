@@ -16,10 +16,8 @@ module Miam
         to_h.as_json
       end
 
-      def to_json
-        to_h.transform_values do |v|
-          v.respond_to?(:as_output) ? v.as_output : v.as_json
-        end.to_json
+      def to_json(opts = nil)
+        to_h.transform_values(&:as_json).to_json
       end
     end
 

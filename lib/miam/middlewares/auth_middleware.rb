@@ -19,7 +19,11 @@ module Miam
         unless OPERATION_WHITELIST.include?(env['miam.operation_name'])
           result = Miam::Operations::AuthorizeOperation.call(
             'operation_name' => env['miam.operation_name'],
-            'authentication_string' => request.get_header('HTTP_AUTHORIZATION').to_s
+            'auth_token' => request.get_header('HTTP_AUTHORIZATION').to_s,
+            'auth_headers' => env['miam.request.headers'],
+            'auth_body_signature' => Digest::SHA1.hexdigest(
+              env['miam.request.body']
+            )
           )
           return [AUTH_RESPONSE_ERROR] if result.nil?
 
