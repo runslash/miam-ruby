@@ -2,19 +2,33 @@ module Miam
   module CacheStores
     class RedisCacheStore
       def initialize(*args)
-        @redis = args[0].is_a?(Redis) ? args[0] : Redis.new(*args)
+        @connection_pool = Queue.new.tap do |queue|
+          Miam::Application.configuration.concurrency.times do
+            queue << Redis.new(*args)
+          end
+        end
       end
 
       def set(key, value, ttl = 60)
-        @redis.set(key.to_s, value.to_s, ex: ttl.to_i)
+        checkout { |cl| cl.set(key.to_s, value.to_s, ex: ttl.to_i) }
       end
 
       def get(key)
-        @redis.get(key.to_s)
+        checkout { |cl| cl.get(key.to_s) }
       end
 
       def delete(key)
-        @redis.del(key.to_s)
+        checkout { |cl| cl.del(key.to_s) }
+      end
+
+      private
+
+      def checkout(&_block)
+        conn = nil
+        conn = @connection_pool.pop
+        yield(conn)
+      ensure
+        @connection_pool << conn unless conn.nil?
       end
     end
   end

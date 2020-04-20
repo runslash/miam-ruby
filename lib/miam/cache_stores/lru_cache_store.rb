@@ -17,8 +17,8 @@ module Miam
         @ttl = ttl.to_f
         @expire_interval = expire_interval
         @op_count = 0
-        @data = {}
-        @expires_at = {}
+        @data = Concurrent::Hash.new
+        @expires_at = Concurrent::Hash.new
       end
 
       def fetch(key, ttl: 60)

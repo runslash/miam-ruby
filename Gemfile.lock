@@ -5,6 +5,7 @@ PATH
       activemodel (~> 6.0)
       aws-sdk-dynamodb (~> 1.45)
       bcrypt (~> 3.1)
+      concurrent-ruby
       pry
       puma (~> 4.3)
       rack (~> 2.2)

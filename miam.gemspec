@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activemodel', '~> 6.0'
   spec.add_dependency 'bcrypt', '~> 3.1'
   spec.add_dependency 'redis', '~> 4.1'
+  spec.add_dependency 'concurrent-ruby'
 
   spec.add_dependency 'pry'
 end
