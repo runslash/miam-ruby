@@ -48,6 +48,14 @@ module Miam
       super(value.to_s.upcase)
     end
 
+    def allow?
+      effect == EFFECT_ALLOW
+    end
+
+    def deny?
+      effect == EFFECT_DENY
+    end
+
     private
 
     def effect_validator

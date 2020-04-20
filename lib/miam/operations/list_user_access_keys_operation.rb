@@ -13,7 +13,7 @@ module Miam
 
         access_keys = \
           if !user.access_key_ids.nil? && user.access_key_ids.length > 0
-            Miam::AccessKeyService.instance.find(*user.access_key_ids.to_a)
+            Miam::AccessKeyService.instance.mfind(*user.access_key_ids.to_a)
           end
 
         Output.new(access_keys: access_keys || [])

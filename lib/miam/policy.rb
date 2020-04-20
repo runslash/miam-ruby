@@ -33,9 +33,21 @@ module Miam
     end
 
     def statements=(arg)
-      super(arg.select do |item|
-        item.is_a?(Miam::PolicyStatement)
-      end)
+      super(
+        arg.map do |item|
+          case item
+          when Hash then Miam::PolicyStatement.new(item.symbolize_keys)
+          when Miam::PolicyStatement then item
+          end
+        end.compact
+      )
+    end
+
+    def allow(operation_name, **kwargs)
+      matched_stmt = statements.find do |stmt|
+        stmt.action.any? { |action| operation_name.match?(/\A#{action}/i) }
+      end
+      matched_stmt
     end
   end
 end

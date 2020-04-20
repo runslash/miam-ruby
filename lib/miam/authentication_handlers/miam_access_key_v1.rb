@@ -13,10 +13,25 @@ module Miam
         end
         return if token_data['credentials'].nil?
 
-        access_key, secret_access_key = \
-          Miam::AccessKeyService.instance.find_with_secret(
-            token_data['credentials']
+        cached_value = Miam::CacheStore.get(
+          "access_key=#{token_data['credentials']}"
+        )
+        if !cached_value.nil?
+          access_key = Miam::AccessKey.new(
+            cached_value['access_key'].symbolize_keys
           )
+          secret_access_key = cached_value['secret']
+        else
+          access_key, secret_access_key = \
+            Miam::AccessKeyService.instance.find_with_secret(
+              token_data['credentials']
+            )
+            Miam::CacheStore.put(
+              "access_key=#{access_key.id}",
+              { 'access_key' => access_key.as_json, 'secret' => secret_access_key }
+            )
+        end
+
         return if secret_access_key.nil?
 
         signed_headers = token_data['signed_headers'].to_s.split(',')
@@ -26,13 +41,13 @@ module Miam
         )
         return unless token_data['signature'] == expected_signature
 
-        cached_policies = Miam::CacheService.instance.get(
+        cached_policies = Miam::CacheStore.get(
           "#{access_key.account_id}/user=#{access_key.user_name}/policies"
         )
         policies = []
         if !cached_policies.nil?
           policies = cached_policies.map do |item|
-            Miam::Policy.from_dynamo_record(item)
+            Miam::Policy.new(item.symbolize_keys)
           end
         else
           user = Miam::UserService.instance.find(
@@ -48,12 +63,31 @@ module Miam
           policies = Miam::PolicyService.instance.mfind(
             access_key.account_id, policy_names
           )
-          Miam::CacheService.instance.put(
+          Miam::CacheStore.put(
             "#{user.account_id}/user=#{user.name}/policies", policies.as_json
           )
         end
-        pp policies.as_json
-        [Miam::Policy.new, Miam::PolicyStatement.new]
+
+        matched_policy = nil
+        matched_policy_statement = nil
+        policies.each do |policy|
+          stmt = policy.allow(
+            operation_name,
+            resource: kwargs.fetch(:resource, nil),
+            condition: kwargs.fetch(:condition, nil)
+          )
+          next if stmt.nil?
+
+          matched_policy = policy
+          matched_policy_statement = stmt
+          break
+        end
+
+        if matched_policy_statement.nil? || matched_policy_statement.deny?
+          raise 'forbidden'
+        end
+
+        [matched_policy, matched_policy_statement]
       end
 
       private

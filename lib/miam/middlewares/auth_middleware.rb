@@ -18,7 +18,7 @@ module Miam
         request = env['miam.request']
         unless OPERATION_WHITELIST.include?(env['miam.operation_name'])
           result = Miam::Operations::AuthorizeOperation.call(
-            'operation_name' => env['miam.operation_name'],
+            'operation_name' => "iam:#{env['miam.operation_name']}",
             'auth_token' => request.get_header('HTTP_AUTHORIZATION').to_s,
             'auth_headers' => env['miam.request.headers'],
             'auth_body_signature' => Digest::SHA1.hexdigest(
