@@ -21,7 +21,7 @@ module Miam
           k.start_with?('HTTP_')
         end
         http_headers.each_with_object({}) do |(key, val), hash|
-          hash[key.sub(/^HTTP_/, '')] = val
+          hash[key.sub(/^HTTP_/, '').downcase] = val
         end
       end
 

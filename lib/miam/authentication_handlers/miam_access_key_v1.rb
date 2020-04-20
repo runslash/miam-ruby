@@ -26,13 +26,13 @@ module Miam
             Miam::AccessKeyService.instance.find_with_secret(
               token_data['credentials']
             )
-            Miam::CacheStore.put(
-              "access_key=#{access_key.id}",
-              { 'access_key' => access_key.as_json, 'secret' => secret_access_key }
-            )
-        end
+          return if access_key.nil? || secret_access_key.nil?
 
-        return if secret_access_key.nil?
+          Miam::CacheStore.put(
+            "access_key=#{access_key.id}",
+            { 'access_key' => access_key.as_json, 'secret' => secret_access_key }
+          )
+        end
 
         signed_headers = token_data['signed_headers'].to_s.split(',')
         expected_signature = signature_for(
@@ -50,9 +50,7 @@ module Miam
             Miam::Policy.new(item.symbolize_keys)
           end
         else
-          user = Miam::UserService.instance.find(
-            access_key.account_id, access_key.user_name
-          )
+          user = find_user(access_key.account_id, access_key.user_name)
           user_groups = Miam::GroupService.instance.mfind(
             access_key.account_id, user.group_names.to_a
           )
@@ -83,11 +81,10 @@ module Miam
           break
         end
 
-        if matched_policy_statement.nil? || matched_policy_statement.deny?
-          raise 'forbidden'
-        end
-
-        [matched_policy, matched_policy_statement]
+        AuthResult.new(
+          access_key.account_id, access_key.user_name, matched_policy.name,
+          matched_policy_statement
+        )
       end
 
       private
@@ -101,6 +98,20 @@ module Miam
         )
         k_signing = OpenSSL::HMAC.digest('SHA256', k_headers, 'miam_ak_v1')
         OpenSSL::HMAC.hexdigest('SHA256', k_signing, body_signature_sha1)
+      end
+
+      def find_user(account_id, name)
+        # user_cached_value = Miam::CacheStore.get(
+        #   "#{account_id}/user=#{name}"
+        # )
+        # if !user_cached_value.nil?
+        #   Miam::User.new(user_cached_value.symbolize_keys)
+        # else
+        #   Miam::UserService.instance.find(account_id, name).tap do |user|
+        #     Miam::CacheStore.put("#{account_id}/user=#{name}", user.as_json)
+        #   end
+        # end
+        Miam::UserService.instance.find(account_id, name)
       end
     end
   end

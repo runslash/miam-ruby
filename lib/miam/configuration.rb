@@ -8,7 +8,7 @@ module Miam
       self.environment = 'development'
       self.operation_parameter_name = 'Operation'
       self.cache_store_adapter = Miam::CacheStores::LruCacheStore.new
-      instance_exec(&block) if block_given?
+      yield(self) if block_given?
     end
 
     def to_h

@@ -3,7 +3,6 @@ module Miam
     include Singleton
 
     OPERATIONS = {
-      'Authorize' => :AuthorizeOperation,
       # USERS
       'DescribeUser' => :DescribeUserOperation,
       'CreateUser' => :CreateUserOperation,
@@ -61,7 +60,8 @@ module Miam
       )
       operation_handler = Miam::Operations.const_get(operation_klass_name).new(
         account_id: env.fetch('miam.account_id', nil),
-        user: env.fetch('miam.user', nil)
+        user: env.fetch('miam.user', nil),
+        env: env
       )
 
       output = operation_handler.call(env['miam.request.data'])

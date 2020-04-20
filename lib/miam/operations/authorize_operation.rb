@@ -8,23 +8,25 @@ module Miam
       def call(args)
         operation_name = args.fetch('operation_name')
         auth_handler = parse_authorization_string(
-          args.fetch('auth_token')
+          context.dig(:env, 'miam.request.headers', 'authorization') ||
+            args.fetch('auth_token')
         )
-        policy, policy_statement = auth_handler.allow!(
+        auth_result = auth_handler.allow!(
           operation_name, args.fetch('auth_body_signature'),
           headers: args.fetch('auth_headers'),
           conditions: args.fetch('auth_conditions', nil)
         )
-        if policy.nil? || policy_statement.nil?
-          raise OperationError, 'Authentication error'
-        end
+        raise OperationError, 'AUTH_ERROR' if auth_result.nil?
+        raise OperationError, 'FORBIDDEN' if auth_result.statement.deny?
 
         Output.new(
-          account_id: '1000',
-          user: Miam::User.new,
-          resource: policy_statement&.resource,
-          condition: policy_statement&.condition
+          account_id: auth_result.account_id,
+          user_name: auth_result.user_name,
+          policy_name: auth_result.policy_name,
+          statement: auth_result.statement
         )
+      rescue KeyError => e
+        raise OperationError, "Missing parameter '#{e.key}'"
       end
 
       private
