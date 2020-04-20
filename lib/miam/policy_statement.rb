@@ -1,5 +1,7 @@
 module Miam
   class PolicyStatement < Model
+    REGEX_CACHE = Miam::CacheStores::LruCacheStore.new
+
     EFFECT_ALLOW = 'ALLOW'
     EFFECT_DENY = 'DENY'
     EFFECTS = [EFFECT_ALLOW, EFFECT_DENY].freeze
@@ -56,12 +58,43 @@ module Miam
       effect == EFFECT_DENY
     end
 
+    def match?(operation_name, **kwargs)
+      match_action?(operation_name) &&
+        match_resource?(kwargs.fetch(:resource, nil))
+    end
+
     private
 
     def effect_validator
       return if EFFECTS.include?(effect)
 
       errors.add(:effect, 'incorrect_value', allowed_values: EFFECTS)
+    end
+
+    def match_action?(operation_name)
+      action.any? do |item|
+        operation_name.match?(
+          REGEX_CACHE.fetch("action:#{item}") do
+            Regexp.new('\A' + item.gsub(/\*/i, '.+') + '\z', 'i')
+          end
+        )
+      end
+    end
+
+    def match_resource?(resource_name)
+      return true if resource_name.nil?
+
+      resource.any? do |item|
+        resource_name.match?(
+          REGEX_CACHE.fetch("resource:#{item}") do
+            Regexp.new('\A' + item.gsub(/\*/i, '.+') + '\z', 'i')
+          end
+        )
+      end
+    end
+
+    def match_condition?(condition_values)
+      true
     end
   end
 end

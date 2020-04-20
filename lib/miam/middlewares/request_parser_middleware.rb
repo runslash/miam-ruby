@@ -12,6 +12,12 @@ module Miam
         env['miam.request.data'] = parse_request_body(env['miam.request.body'])
         env['miam.request.headers'] = parse_headers(env)
         @app.call(env)
+      rescue KeyError => e
+        [
+          400,
+          { 'content-type' => 'application/json' },
+          [{ 'error' => "Missing 'Operation' parameter" }.to_json]
+        ]
       end
 
       private

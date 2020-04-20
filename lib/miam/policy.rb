@@ -45,7 +45,7 @@ module Miam
 
     def allow(operation_name, **kwargs)
       matched_stmt = statements.find do |stmt|
-        stmt.action.any? { |action| operation_name.match?(/\A#{action}/i) }
+        stmt.match?(operation_name, **kwargs)
       end
       matched_stmt
     end

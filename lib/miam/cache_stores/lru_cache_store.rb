@@ -26,7 +26,7 @@ module Miam
         if !value.nil?
           value
         else
-          store(key, yield)
+          set(key, yield, ttl)
         end
       end
 

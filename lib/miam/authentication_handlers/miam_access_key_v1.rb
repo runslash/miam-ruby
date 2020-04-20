@@ -81,6 +81,8 @@ module Miam
           break
         end
 
+        return if matched_policy.nil?
+
         AuthResult.new(
           access_key.account_id, access_key.user_name, matched_policy.name,
           matched_policy_statement
