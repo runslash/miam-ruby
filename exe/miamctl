@@ -7,23 +7,62 @@ Dir.chdir(File.realpath(File.dirname(__FILE__) + '/../'))
 
 command_name = ARGV.shift
 
+pumactl_args = [
+  "-S #{Dir.pwd}/tmp/puma.state",
+  "-C #{Dir.pwd}/config/puma.rb",
+  "--pidfile #{Dir.pwd}/tmp/puma.pid"
+]
+
+bundler_args = []
+
 case command_name
 when 'start'
-  exec "bundle exec puma #{ARGV.join(' ')}"
+  OptionParser.new do |opts|
+    opts.on('--redis-url=URL', 'Redis URL') do |v|
+      ENV['MIAM_REDIS_URL'] = v.to_s
+    end
+
+    opts.on('-w', '--workers=COUNT', 'Workers count (Puma)') do |v|
+      ENV['MIAM_WORKERS'] = v.to_i.to_s
+    end
+
+    opts.on('-t', '--threads=COUNT', 'Threads per workers (Puma)') do |v|
+      ENV['MIAM_THREADS'] = v.to_i.to_s
+    end
+
+    opts.on('-p', '--port=NUMBER', 'Server port, default: 8808') do |v|
+      ENV['MIAM_BIND_URL'] = "tcp://0.0.0.0:#{v}"
+    end
+
+    opts.on('-b', '--bind=URL', 'Bind address, example: tcp://0.0.0.0:8808') do |v|
+      ENV['MIAM_BIND_URL'] = v.to_s
+    end
+
+    opts.on('-e', '--environment=COUNT', 'Environment (default: development)') do |v|
+      ENV['MIAM_ENV'] = v.to_s
+    end
+
+    opts.on('--queue-requests', 'Enable Puma queue requests (see puma queue_requests)') do |v|
+      ENV['MIAM_QUEUE_REQUESTS'] = '1'
+    end
+
+    opts.on('-l', '--logfile=FILE', 'Log file path, example: /var/log/miam.log') do |v|
+      ENV['MIAM_LOG_FILE'] = v.to_s
+    end
+
+    opts.on('--keep-file-descriptors', 'Log file path, example: /var/log/miam.log') do |v|
+      bundler_args << '--keep-file-descriptors'
+    end
+  end.parse!
+  exec "bundle exec #{bundler_args.join(' ')} puma #{pumactl_args.join(' ')}"
 when 'reload'
-  Process.kill(
-    'USR1', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
-  )
+  exec "bundle exec #{bundler_args.join(' ')} pumactl #{pumactl_args.join(' ')} phased-restart"
 when 'restart'
-  Process.kill(
-    'USR2', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
-  )
+  exec "bundle exec #{bundler_args.join(' ')} pumactl #{pumactl_args.join(' ')} restart"
 when 'stop'
-  Process.kill(
-    'TERM', File.read(ENV.fetch('PUMA_PID_FILE', 'tmp/puma.pid')).to_i
-  )
-when 'deploy'
-  Aws::CloudFormation::
+  exec "bundle exec #{bundler_args.join(' ')} pumactl #{pumactl_args.join(' ')} stop"
+when 'setup'
+
 else
   abort "Unknown command: #{command_name}"
 end

@@ -1,44 +1,34 @@
 # Miam
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/miam`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'miam'
+```sh
+gem install miam
 ```
 
-And then execute:
+## Run
 
-    $ bundle install
+### Simple
+```sh
+miamctl start
+```
 
-Or install it yourself as:
+### Advanced Options
+- `-w`, `--workers` - Number of server workers (Puma Workers count)
+- `-t`, `--threads` - Number of threads per worker (Puma Threads count)
+- `--queue-requests` - Enable Puma `queue_requests` setting
+- `-p`, `--port` - Server port, default: 8808
+- `-b`, `--bind` - Bind address, example: tcp://0.0.0.0:8808 (overwrite `--port` option)
+- `--redis-url` - Redis URL to use as cache store instead of LRU, example: redis://localhost:6789
+- `-d`, `--daemon` - Daemonize process
+- `--keep-file-descriptors` - Pass `--keep-file-descriptors` to `bundle exec puma` used with SystemD service/socket
+```
+miamctl start --redis-url=redis://localhost:6789 --workers 2 --threads 4 --bind tcp://0.0.0.0:8808
+```
 
-    $ gem install miam
+## Test
 
-## Usage
-
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/miam. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/miam/blob/master/CODE_OF_CONDUCT.md).
-
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Miam project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/miam/blob/master/CODE_OF_CONDUCT.md).
+```sh
+siege -c4 -t60S -r 100 \
+    --content-type "application/json" \
+    'http://localhost:8808/a POST {"operation_name":"iam:DescribeUser","auth_token":"MIAM-AK-V1 credentials=AKRLDNFSQMWK5JN4FHGC3Q; date=1587420316; signature=41f25a0c0be60980a863bcd08d054d45d76db9d381513aa540a4ae5265a4a50e","auth_headers":{"x":"x"},"auth_body_signature":"bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f"}'
+```
