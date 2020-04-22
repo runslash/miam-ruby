@@ -12,14 +12,26 @@ module Miam
       'ListUserAccessKeys' => :ListUserAccessKeysOperation,
       'AttachUserInlinePolicy' => :AttachUserInlinePolicyOperation,
       'DetachUserInlinePolicy' => :DetachUserInlinePolicyOperation,
+      'AttachUserGroup' => :AttachUserGroupOperation,
+      'DetachUserGroup' => :DetachUserGroupOperation,
+      # ROLES
+      'CreateRole' => :CreateRoleOperation,
+      'DescribeRole' => :DescribeRoleOperation,
+      'DeleteRole' => :DeleteRoleOperation,
+      'ListRolePolicies' => :ListRolePoliciesOperation,
+      'AttachRoleGroup' => :AttachRoleGroupOperation,
+      'DetachRoleGroup' => :DetachRoleGroupOperation,
+      'AttachRolePolicy' => :AttachRolePolicyOperation,
+      'DetachRolePolicy' => :DetachRolePolicyOperation,
+      'AttachRoleInlinePolicy' => :AttachRoleInlinePolicyOperation,
+      'DetachRoleInlinePolicy' => :DetachRoleInlinePolicyOperation,
       # GROUPS
       'CreateGroup' => :CreateGroupOperation,
       'DeleteGroup' => :DeleteGroupOperation,
       'DescribeGroup' => :DescribeGroupOperation,
-      'AttachUserGroup' => :AttachUserGroupOperation,
-      'DetachUserGroup' => :DetachUserGroupOperation,
       # ACCESS KEYS
       'CreateAccessKey' => :CreateAccessKeyOperation,
+      'CreateTemporaryAccessKey' => :CreateTemporaryAccessKeyOperation,
       'DeleteAccessKey' => :DeleteAccessKeyOperation,
       # POLICIES
       'CreatePolicy' => :CreatePolicyOperation,

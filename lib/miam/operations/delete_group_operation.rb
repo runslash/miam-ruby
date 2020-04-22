@@ -5,7 +5,8 @@ module Miam
     class DeleteGroupOperation < Operation
       EXPRESSION_ATTRIBUTE_NAMES = {
         '#account_id' => 'account_id', '#name' => 'name',
-        '#user_names' => 'user_names', '#policy_names' => 'policy_names'
+        '#user_names' => 'user_names', '#policy_names' => 'policy_names',
+        '#role_names' => 'role_names'
       }.freeze
 
       EXPRESSION_ATTRIBUTE_VALUES = { ':zero' => 0 }.freeze
@@ -17,7 +18,8 @@ module Miam
       CONDITION_EXPRESSION = <<-EXPRESSION
         attribute_exists(#account_id) AND attribute_exists(#name) AND
         (attribute_not_exists(#user_names) OR size(#user_names) = :zero) AND
-        (attribute_not_exists(#policy_names) OR size(#policy_names) = :zero)
+        (attribute_not_exists(#policy_names) OR size(#policy_names) = :zero) AND
+        (attribute_not_exists(#role_names) OR size(#role_names) = :zero)
       EXPRESSION
 
       def call(args)

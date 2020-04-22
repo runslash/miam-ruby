@@ -8,6 +8,7 @@ module Miam
     attribute :statements
     attribute :user_names
     attribute :group_names
+    attribute :role_names
     attribute :created_at, :datetime, default: -> { Time.now.utc }
     attribute :updated_at, :datetime, default: -> { Time.now.utc }
 
@@ -23,6 +24,7 @@ module Miam
         end,
         user_names: item['user_names'],
         group_names: item['group_names'],
+        role_names: item['role_names'],
         created_at: Time.at(item['created_at'].to_i),
         updated_at: Time.at(item['updated_at'].to_i)
       )

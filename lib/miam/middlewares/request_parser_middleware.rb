@@ -16,7 +16,7 @@ module Miam
         [
           400,
           { 'content-type' => 'application/json' },
-          [{ 'error' => "Missing 'Operation' parameter" }.to_json]
+          [{ 'error' => "Missing '#{e.key}' parameter" }.to_json]
         ]
       end
 

@@ -5,6 +5,35 @@
 gem install miam
 ```
 
+## Configuration
+Create an User
+```ruby
+Miam::Operations::CreateUserOperation.new(account_id: '1000').call('user_name' => 'dev', 'user_password' => '123456')
+```
+
+Create an Access Key
+```ruby
+Miam::Operations::CreateAccessKeyOperation.new(account_id: '1000').call('user_name' => 'dev')
+```
+
+Create a Policy (all privileges)
+```ruby
+Miam::Operations::CreatePolicyOperation.new(account_id: '1000').call(
+    'policy_name' => 'AdministratorAccess',
+    'policy_statements' => [
+        { 'action' => '*', 'resource' => '*' }
+    ]
+)
+```
+
+Attach Policy to User
+```ruby
+Miam::Operations::AttachUserPolicyOperation.new(account_id: '1000').call(
+    'user_name' => 'dev',
+    'policy_name' => 'AdministratorAccess'
+)
+```
+
 ## Run
 
 ### Simple

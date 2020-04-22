@@ -25,7 +25,6 @@ module Miam
       end
 
       def call(env)
-        request = env['miam.request']
         result = authorize!(
           env['miam.operation_name'],
           env['HTTP_AUTHORIZATION'].to_s,

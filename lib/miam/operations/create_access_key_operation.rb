@@ -68,7 +68,8 @@ module Miam
 
         Output.new(
           access_key_id: access_key.id,
-          secret_access_key: secret_access_key
+          secret_access_key: secret_access_key,
+          user_name: access_key.user_name
         )
       rescue Aws::DynamoDB::Errors::TransactionCanceledException
         raise OperationError, ERROR_MESSAGE

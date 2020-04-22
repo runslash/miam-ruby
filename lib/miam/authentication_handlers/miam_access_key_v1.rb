@@ -1,6 +1,8 @@
 module Miam
   module AuthenticationHandlers
     class MiamAccessKeyV1 < Miam::AuthenticationHandler
+      DIGEST = OpenSSL::Digest.new('sha256')
+
       def initialize(token)
         @token = token
       end
@@ -33,6 +35,7 @@ module Miam
             { 'access_key' => access_key.as_json, 'secret' => secret_access_key }
           )
         end
+        return if access_key.expired?
 
         signed_headers = token_data['signed_headers'].to_s.split(',')
         expected_signature = signature_for(
@@ -93,13 +96,13 @@ module Miam
 
       def signature_for(secret, date, body_signature_sha1, headers = {})
         decoded_secret = Base64.decode64(secret)
-        k_date = OpenSSL::HMAC.digest('SHA256', decoded_secret, date.to_s)
+        k_date = OpenSSL::HMAC.digest(DIGEST, decoded_secret, date.to_s)
         k_headers = OpenSSL::HMAC.digest(
-          'SHA256', k_date,
+          DIGEST, k_date,
           headers.collect { |key, value| "#{key}=#{value}" }.join(';')
         )
-        k_signing = OpenSSL::HMAC.digest('SHA256', k_headers, 'miam_ak_v1')
-        OpenSSL::HMAC.hexdigest('SHA256', k_signing, body_signature_sha1)
+        k_signing = OpenSSL::HMAC.digest(DIGEST, k_headers, 'miam_ak_v1')
+        OpenSSL::HMAC.hexdigest(DIGEST, k_signing, body_signature_sha1)
       end
 
       def find_user(account_id, name)

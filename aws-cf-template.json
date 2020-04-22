@@ -37,6 +37,21 @@
         ]
       }
     },
+    "MIAMRolesTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": { "Fn::Join": ["-", ["miam", { "Ref": "Environment" }, "roles"]] },
+        "AttributeDefinitions": [
+          { "AttributeName": "account_id", "AttributeType": "S" },
+          { "AttributeName": "name", "AttributeType": "S" }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          { "AttributeName": "account_id", "KeyType": "HASH" },
+          { "AttributeName": "name", "KeyType": "RANGE" }
+        ]
+      }
+    },
     "MIAMPoliciesTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -89,18 +104,33 @@
         "AttributeDefinitions": [
           { "AttributeName": "id", "AttributeType": "S" },
           { "AttributeName": "account_id", "AttributeType": "S" },
-          { "AttributeName": "user_name", "AttributeType": "S" }
+          { "AttributeName": "user_name", "AttributeType": "S" },
+          { "AttributeName": "role_name", "AttributeType": "S" }
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "KeySchema": [
           { "AttributeName": "id", "KeyType": "HASH" }
         ],
+        "TimeToLiveSpecification": {
+          "AttributeName": "expires_at",
+          "Enabled": true
+        },
         "GlobalSecondaryIndexes": [
           {
             "IndexName": "account_id_user_name-index",
             "KeySchema": [
               { "AttributeName": "account_id", "KeyType": "HASH" },
               { "AttributeName": "user_name", "KeyType": "RANGE" }
+            ],
+            "Projection": {
+              "ProjectionType": "KEYS_ONLY"
+            }
+          },
+          {
+            "IndexName": "account_id_role_name-index",
+            "KeySchema": [
+              { "AttributeName": "account_id", "KeyType": "HASH" },
+              { "AttributeName": "role_name", "KeyType": "RANGE" }
             ],
             "Projection": {
               "ProjectionType": "KEYS_ONLY"
