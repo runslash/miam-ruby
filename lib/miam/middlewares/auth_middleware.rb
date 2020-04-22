@@ -33,7 +33,8 @@ module Miam
         )
 
         env['miam.account_id'] = result.account_id
-        env['miam.user'] = result.user
+        env['miam.auth.owner_type'] = result.owner_type
+        env['miam.auth.owner_name'] = result.owner_name
         env['miam.auth.conditions'] = result.conditions
         env['miam.auth.resources'] = result.resources
 

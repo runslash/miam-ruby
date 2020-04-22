@@ -3,7 +3,8 @@ module Miam
     Error = Class.new(StandardError)
     AuthResult = Struct.new(
       :account_id,
-      :user_name,
+      :owner_type,
+      :owner_name,
       :policy_name,
       :statement
     )

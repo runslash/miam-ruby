@@ -18,16 +18,18 @@ module Miam
         '- Role does not exists'
 
       def call(args)
-        ttl = args.fetch('access_key_ttl', 3600).to_i
-        unless ttl > 10
-          raise OperationError, \
-                'Access key time-to-live is too short (must be >10)'
-        end
-
         access_key = Miam::AccessKey.new(
           account_id: context.fetch(:account_id),
           role_name: args.fetch('role_name'),
-          expires_at: Time.now + ttl
+          expires_at: args.fetch('expiration_date') do
+            ttl = args.fetch('access_key_ttl', 3600).to_i
+            unless ttl > 10
+              raise OperationError, \
+                    'Access key time-to-live is too short (must be >10)'
+            end
+
+            Time.now + ttl
+          end
         )
         secret_access_key = Miam::AccessKey.random_secret
         Miam::DynamoService.instance.transact_write_items(

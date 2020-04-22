@@ -28,5 +28,13 @@ module Miam
 
       expires_at <= Time.now
     end
+
+    def owner_type
+      !user_name.nil? ? 'user' : 'role'
+    end
+
+    def owner_name
+      !user_name.nil? ? user_name : role_name
+    end
   end
 end

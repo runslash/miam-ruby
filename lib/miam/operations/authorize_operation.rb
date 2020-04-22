@@ -21,7 +21,8 @@ module Miam
 
         Output.new(
           account_id: auth_result.account_id,
-          user_name: auth_result.user_name,
+          owner_type: auth_result.owner_type,
+          owner_name: auth_result.owner_name,
           policy_name: auth_result.policy_name,
           statement: auth_result.statement
         )

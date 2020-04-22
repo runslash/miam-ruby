@@ -53,19 +53,14 @@ module Miam
             Miam::Policy.new(item.symbolize_keys)
           end
         else
-          user = find_user(access_key.account_id, access_key.user_name)
-          user_groups = Miam::GroupService.instance.mfind(
-            access_key.account_id, user.group_names.to_a
-          )
-          policy_names = (user.policy_names || []).to_a
-          policy_names.concat(
-            (user_groups || []).flat_map { |group| group.policy_names.to_a }
-          )
+          owner = find_owner(access_key)
+          owner_type = owner.is_a?(Miam::Role) ? 'role' : 'user'
           policies = Miam::PolicyService.instance.mfind(
-            access_key.account_id, policy_names
+            owner.account_id, find_policy_names(owner)
           )
           Miam::CacheStore.put(
-            "#{user.account_id}/user=#{user.name}/policies", policies.as_json
+            "#{owner.account_id}/#{access_key.owner_type}=#{access_key.owner_name}/policies",
+            policies.as_json
           )
         end
 
@@ -87,8 +82,8 @@ module Miam
         return if matched_policy.nil?
 
         AuthResult.new(
-          access_key.account_id, access_key.user_name, matched_policy.name,
-          matched_policy_statement
+          access_key.account_id, access_key.owner_type, access_key.owner_name,
+          matched_policy.name, matched_policy_statement
         )
       end
 
@@ -105,18 +100,26 @@ module Miam
         OpenSSL::HMAC.hexdigest(DIGEST, k_signing, body_signature_sha1)
       end
 
-      def find_user(account_id, name)
-        # user_cached_value = Miam::CacheStore.get(
-        #   "#{account_id}/user=#{name}"
-        # )
-        # if !user_cached_value.nil?
-        #   Miam::User.new(user_cached_value.symbolize_keys)
-        # else
-        #   Miam::UserService.instance.find(account_id, name).tap do |user|
-        #     Miam::CacheStore.put("#{account_id}/user=#{name}", user.as_json)
-        #   end
-        # end
-        Miam::UserService.instance.find(account_id, name)
+      def find_owner(access_key)
+        if !access_key.user_name.nil?
+          Miam::UserService.instance.find(
+            access_key.account_id, access_key.user_name
+          )
+        else
+          Miam::RoleService.instance.find(
+            access_key.account_id, access_key.role_name
+          )
+        end
+      end
+
+      def find_policy_names(owner)
+        owner_groups = Miam::GroupService.instance.mfind(
+          owner.account_id, owner.group_names.to_a
+        )
+        policy_names = (owner.policy_names || []).to_a
+        policy_names.concat(
+          (owner_groups || []).flat_map { |group| group.policy_names.to_a }
+        )
       end
     end
   end
